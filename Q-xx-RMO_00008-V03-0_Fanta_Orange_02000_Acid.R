@@ -1,17 +1,15 @@
-dt <- list(); dt$R <- paste0(Sys.getenv("OneDriveCommercial"), "/FE_Methoden/Allgemein/R_dt_project/")
-beverage <- "Fanta_Orange"
-version <- "01"
-source(paste0(dt$R,"R/wd.R"))
-dir(paste0(grep(beverage, wd$bev.ccep, value = T)[1]))
-source(paste0(grep(beverage, wd$bev.ccep, value = T)[1], "/", paste0("Rsource_", beverage, "_V", version, ".R")))
-source(paste0(grep(beverage, wd$bev.ccep, value = T)[1], "/", paste0("Rsource_", beverage, "_V03_validated_spc.R")))
+# beverage parameter ####
+setwd(this.path::this.dir())
+dir( pattern = "Rsource" )
+source.file <- print( "Rsource_Fanta_Orange_02000_Acid.R" )
+source( paste0(getwd(), "/", source.file) )
 
 # Fanta Orange 2mm Model Modelloptimierung
 
 # set wd and source packages and functions
 # PLS and LM ####
 fao$pls <- lapply(fao$seqp$model, function(x) pls_function(csv_transfered = x
-                                                           , substance = fao$plspara$substance
+                                                           , substance = dt$para$substance
                                                            , wlr = fao$plspara$wl 
                                                            , ncomp = fao$plspara$ncomp
                                                            , spc = "spc"))
@@ -19,7 +17,7 @@ fao$pls <- lapply(fao$seqp$model, function(x) pls_function(csv_transfered = x
 
 fao$pls_lm <- mapply(function( x , y ) pls_lm_function(x
                                                        , csv_transfered = y
-                                                       , substance = fao$plspara$substance
+                                                       , substance = dt$para$substance
                                                        , wlr = fao$plspara$wl 
                                                        , ncomp = fao$plspara$ncomp)
                      , x = fao$pls
@@ -82,14 +80,14 @@ mod_c$pngname <- paste(mod_c$spc, mod_c$wl1, mod_c$wl2, mod_c$wl3, mod_c$wl4, "P
 mod_c$modelname <- paste(mod_c$wl1, mod_c$wl2, mod_c$wl3, mod_c$wl4, mod_c$spc, mod_c$ncomp, sep = "_")
 
 mod_c$model <- pls_function(csv_transfered = fao$seqp$model[[ mod_c$matrix ]]
-                            , substance = fao$plspara$substance
+                            , substance = dt$para$substance
                             , wlr = data.frame(mod_c$wl1, mod_c$wl2, mod_c$wl3, mod_c$wl4)
                             , ncomp = mod_c$ncomp
                             , spc = mod_c$spc
                             , validation = "none")
 
 mod_c$pred$lin <- pred_of_new_model(modell_csv_transfered = fao$seqp$model[[ mod_c$matrix ]]
-                                    , substance = fao$plspara$substance
+                                    , substance = dt$para$substance
                                     , wl1 = mod_c$wl1
                                     , wl2 = mod_c$wl2
                                     , wl3 = mod_c$wl3
@@ -122,7 +120,7 @@ dev.off()
 mod_c$pred$spc <- list()
 for(i in 1:length(fao$trs$spc))
   mod_c$pred$spc[[i]] <- pred_of_new_model(modell_csv_transfered = fao$seqp$model[[ mod_c$matrix ]]
-                                           , substance = fao$plspara$substance
+                                           , substance = dt$para$substance
                                            , wl1 = mod_c$wl1
                                            , wl2 = mod_c$wl2
                                            , wl3 = mod_c$wl3
