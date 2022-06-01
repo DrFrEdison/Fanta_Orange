@@ -43,9 +43,9 @@ for(i in 1:length(fao$pls)) fao$pls_merge_site[[i]] <- fao$pls_merge[[i]][[1]]
 
 fao$pred.lin.diff <- mapply( function( x , y ) linearitaet_filter( linearitaet_prediction =  x$prediction
                                                                    , ncomp = fao$plspara$ncomp
-                                                                   , linearitaet_limit_1 = 4.465 * .5
-                                                                   , linearitaet_limit_2 = 5.456 * 1.5
-                                                                   , R_2 = .8
+                                                                   , linearitaet_limit_1 = 4.465 * .85
+                                                                   , linearitaet_limit_2 = 5.456 * 1.15
+                                                                   , R_2 = .9
                                                                    , SOLL = fao$lin$data$Acid
                                                                    , pls_merge = y )
                              , x = fao$pred.lin
@@ -54,7 +54,15 @@ fao$pred.lin.diff <- mapply( function( x , y ) linearitaet_filter( linearitaet_p
 )
 fao$pred.lin.diff
 lapply(fao$pred.lin.diff, head)
-fao$pred.lin.diff[[3]][ order( fao$pred.lin.diff[[4]]$spcR), ]
+lapply(fao$pred.lin.diff, function(x) head( x[ order(x$sd) , ]))
+dat1 <- head(fao$pred.lin.diff[[1]][ order( fao$pred.lin.diff[[1]]$spcR), ], 50)
+head(dat1[order(dat1$sd),])
+dat1 <- head(fao$pred.lin.diff[[2]][ order( fao$pred.lin.diff[[2]]$spcR), ], 50)
+head(dat1[order(dat1$sd),])
+dat1 <- head(fao$pred.lin.diff[[3]][ order( fao$pred.lin.diff[[3]]$spcR), ], 50)
+head(dat1[order(dat1$sd),])
+dat1 <- head(fao$pred.lin.diff[[4]][ order( fao$pred.lin.diff[[4]]$spcR), ], 50 )
+head(dat1[order(dat1$sd),])
 
 # fao$pred.lin.diff[[1]] <- NULL
 
@@ -62,16 +70,16 @@ lapply(fao$pred.lin.diff, function(x) head(x[order(x$sd),]))
 lapply(fao$pred.lin.diff, function(x) head(x[order(x$mad),]))
 
 
-dat1 <- fao$pls_merge[[3]]$Mannheim_MY
+dat1 <- fao$pls_merge[[1]]$Mannheim_MY
 head( dat1[ order(dat1$mad) , ] )
 head( dat1[ order(dat1$sd) , ] )
 # calculate best model ####
 mod_c <- list()
-mod_c$ncomp <-4
-mod_c$wl1 <- 425
-mod_c$wl2 <- 465
-mod_c$wl3 <- NA
-mod_c$wl4 <- NA
+mod_c$ncomp <- 4
+mod_c$wl1 <- 360
+mod_c$wl2 <- 380
+mod_c$wl3 <- 490
+mod_c$wl4 <- 500
 mod_c$spc <- "spc"
 mod_c$matrix <- 1
 
@@ -98,7 +106,7 @@ mod_c$pred$lin <- pred_of_new_model(modell_csv_transfered = fao$seqp$model[[ mod
 
 setwd(dt$wd)
 setwd("./Modelloptimierung")
-setwd(paste0("./", dt$para$mop.date, "_", dt$para$model.pl[1], "_", dt$para$para))
+setwd(paste0("./", dt$para$mop.date, "_", dt$para$model.pl[1], "_", dt$para$substance))
 setwd("./Analyse")
 
 png(paste0(.date(),"_FaO_Prediction_2mm_Linearitaet.png"),xxx<-4800,xxx/16*9,"px",12,"white",res=500,"sans",T,"cairo")
@@ -167,7 +175,7 @@ dev.off()
 # final model matrix ####
 setwd(dt$wd)
 setwd("./Modelloptimierung")
-setwd(paste0("./", dt$para$mop.date, "_", dt$para$model.pl[1], "_", dt$para$para))
+setwd(paste0("./", dt$para$mop.date, "_", dt$para$model.pl[1], "_", dt$para$substance))
 setwd("./Modellmatrix")
 
 fao$seqp$export_matrix <- data.frame(cbind(fao$seqp$model[[ mod_c$matrix ]]$data, fao$seqp$model[[ mod_c$matrix ]]$spc))
